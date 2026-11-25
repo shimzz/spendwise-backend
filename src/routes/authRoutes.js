@@ -4,13 +4,15 @@ const {
   registerUser,
   loginUser,
   changePassword,
-  updateProfile, // <-- Yeh import hona zaroori hai
+  updateProfile,
+  deleteAccount, // <-- Import karein
 } = require("../controllers/authController");
 const { protect } = require("../middleware/authMiddleware");
 
 router.post("/register", registerUser);
 router.post("/login", loginUser);
 router.put("/change-password", protect, changePassword);
-router.put("/profile", protect, updateProfile); // <-- Yeh route add karein
+router.put("/profile", protect, updateProfile);
+router.delete("/delete-account", protect, deleteAccount); // <-- Naya Route
 
 module.exports = router;

@@ -12,28 +12,34 @@ const setBudget = async (req, res) => {
         .json({ message: "Amount, startDate, and endDate are required" });
     }
 
-    // Pehle check karein ke is date range ka budget pehle se hai ya nahi
-    // Agar hai toh update karein, warna naya banayein
-    let budget = await Budget.findOne({
-      user: req.user.id,
-      startDate,
-      endDate,
+    // Dates ko proper Date object mein convert karein
+    const start = new Date(startDate);
+    const end = new Date(endDate);
+
+    // User ka koi bhi purana budget dhoondein (latest)
+    let budget = await Budget.findOne({ user: req.user.id }).sort({
+      createdAt: -1,
     });
 
     if (budget) {
+      // Agar budget mojood hai, toh usko update karein
       budget.amount = amount;
+      budget.startDate = start;
+      budget.endDate = end;
       await budget.save();
     } else {
+      // Agar nahi hai, toh naya banayein
       budget = await Budget.create({
         user: req.user.id,
         amount,
-        startDate,
-        endDate,
+        startDate: start,
+        endDate: end,
       });
     }
 
     res.status(200).json(budget);
   } catch (error) {
+    console.error("Budget Save Error:", error);
     res.status(500).json({ message: error.message });
   }
 };
@@ -42,13 +48,9 @@ const setBudget = async (req, res) => {
 // @route   GET /api/budget
 const getBudget = async (req, res) => {
   try {
-    const today = new Date();
-
-    // Aaj ki date ke hisaab se active budget dhoondein
-    const budget = await Budget.findOne({
-      user: req.user.id,
-      startDate: { $lte: today },
-      endDate: { $gte: today },
+    // Sab se latest budget fetch karein (taake form mein purana data load ho sake)
+    const budget = await Budget.findOne({ user: req.user.id }).sort({
+      createdAt: -1,
     });
 
     res

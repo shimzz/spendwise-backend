@@ -2,6 +2,7 @@ const express = require("express");
 const cors = require("cors");
 const dotenv = require("dotenv");
 const connectDB = require("./config/db");
+const settingRoutes = require("./routes/settingRoutes");
 
 dotenv.config(); // <--- Yeh line zaroori hai
 connectDB();
@@ -20,6 +21,8 @@ app.use("/api/budget", budgetRoutes);
 // Admin Routes
 const adminRoutes = require("./routes/adminRoutes");
 app.use("/api/admin", adminRoutes);
+
+app.use("/api/settings", settingRoutes);
 
 const statsRoutes = require("./routes/statsRoutes");
 app.use("/api/stats", statsRoutes);
