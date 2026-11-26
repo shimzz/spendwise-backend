@@ -7,7 +7,7 @@ const connectDB = async () => {
     return cachedConnection;
   }
   try {
-    const conn = await mongoose.connect(process.env.MONGO_URI);
+    const conn = await mongoose.connect(process.env.MONGODB_URI);
     cachedConnection = conn;
     console.log("✅ MongoDB Connected");
     return conn;
